@@ -9,7 +9,8 @@ import (
 	"os"
 
 	pb "github.com/DymaSV/shippy-consignment-server/proto/consignment"
-	"google.golang.org/grpc"
+	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro/v2/client"
 )
 
 const (
@@ -18,13 +19,10 @@ const (
 )
 
 func main() {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
-	}
-	defer conn.Close()
+	service := micro.NewService(micro.Name("shippy.cli.consignment"))
+	service.Init()
 
-	client := pb.NewShippingServiceClient(conn)
+	client := pb.NewShippingService("shippy.service.consignment", client.NewClient())
 
 	file := filename
 	if len(os.Args) > 1 {
